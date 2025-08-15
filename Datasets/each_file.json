@@ -1,0 +1,44 @@
+{
+    "file": "python_ccxt_oceanex.py",
+    "function": "oceanex.fetch_orders",
+    "version_data": [
+        {
+            "commit_date_time": "2023-11-16 12:46:12+00:00",
+            "commit_sha": "8d2f99100013351c73cf0629d66e28e7a2e45c0a",
+            "commit_message": "Merge pull request #19987 from ttodua/exception-hierarchy-OF-above-NE\n\nfix(errors) - move `OperationFailed` exception to root\n\n[ci skip]",
+            "docstring": "fetches information on multiple orders made by the user\n        :see: https://api.oceanex.pro/doc/v1/#order-status-with-filters-post\n        :param str symbol: unified market symbol of the market orders were made in\n        :param int [since]: the earliest time in ms to fetch orders for\n        :param int [limit]: the maximum number of order structures to retrieve\n        :param dict [params]: extra parameters specific to the oceanex api endpoint\n        :returns Order[]: a list of `order structures <https://github.com/ccxt/ccxt/wiki/Manual#order-structure>`",
+            "code": "def fetch_orders(self, symbol: Str = None, since: Int = None, limit: Int = None, params={}) -> List[Order]:\n        \n        \n        \n        self.check_required_symbol('fetchOrders', symbol)\n        self.load_markets()\n        market = self.market(symbol)\n        states = self.safe_value(params, 'states', ['wait', 'done', 'cancel'])\n        query = self.omit(params, 'states')\n        request = {\n            'market': market['id'],\n            'states': states,\n            'need_price': 'True',\n        }\n        if limit is not None:\n            request['limit'] = limit\n        response = self.privateGetOrdersFilter(self.extend(request, query))\n        data = self.safe_value(response, 'data', [])\n        result = []\n        for i in range(0, len(data)):\n            orders = self.safe_value(data[i], 'orders', [])\n            status = self.parse_order_status(self.safe_value(data[i], 'state'))\n            parsedOrders = self.parse_orders(orders, market, since, limit, {'status': status})\n            result = self.array_concat(result, parsedOrders)\n        return result",
+            "docstring_lines": {
+                "start_line": 679,
+                "end_line": 687
+            },
+            "code_lines": {
+                "start_line": 678,
+                "end_line": 708
+            }
+        },
+        {
+            "commit_date_time": "2023-11-19 18:50:33+00:00",
+            "commit_sha": "dcf03a6defa85b205e46bddf47975aaff2990509",
+            "commit_message": "4.1.57\n\n[ci skip]",
+            "docstring": "fetches information on multiple orders made by the user\n        :see: https://api.oceanex.pro/doc/v1/#order-status-with-filters-post\n        :param str symbol: unified market symbol of the market orders were made in\n        :param int [since]: the earliest time in ms to fetch orders for\n        :param int [limit]: the maximum number of order structures to retrieve\n        :param dict [params]: extra parameters specific to the oceanex api endpoint\n        :returns Order[]: a list of `order structures <https://docs.ccxt.com/#/?id=order-structure>`",
+            "code": "def fetch_orders(self, symbol: Str = None, since: Int = None, limit: Int = None, params={}) -> List[Order]:\n        \n        \n        \n        if symbol is None:\n            raise ArgumentsRequired(self.id + ' fetchOrders() requires a symbol argument')\n        self.load_markets()\n        market = self.market(symbol)\n        states = self.safe_value(params, 'states', ['wait', 'done', 'cancel'])\n        query = self.omit(params, 'states')\n        request = {\n            'market': market['id'],\n            'states': states,\n            'need_price': 'True',\n        }\n        if limit is not None:\n            request['limit'] = limit\n        response = self.privateGetOrdersFilter(self.extend(request, query))\n        data = self.safe_value(response, 'data', [])\n        result = []\n        for i in range(0, len(data)):\n            orders = self.safe_value(data[i], 'orders', [])\n            status = self.parse_order_status(self.safe_value(data[i], 'state'))\n            parsedOrders = self.parse_orders(orders, market, since, limit, {'status': status})\n            result = self.array_concat(result, parsedOrders)\n        return result",
+            "docstring_lines": {
+                "start_line": 680,
+                "end_line": 688
+            },
+            "code_lines": {
+                "start_line": 679,
+                "end_line": 710
+            }
+        }
+    ],
+    "diff_code": "  def fetch_orders(self, symbol: Str = None, since: Int = None, limit: Int = None, params={}) -> List[Order]:\n          \n          \n          \n-         self.check_required_symbol('fetchOrders', symbol)\n+         if symbol is None:\n+             raise ArgumentsRequired(self.id + ' fetchOrders() requires a symbol argument')\n          self.load_markets()\n          market = self.market(symbol)\n          states = self.safe_value(params, 'states', ['wait', 'done', 'cancel'])\n          query = self.omit(params, 'states')\n          request = {\n              'market': market['id'],\n              'states': states,\n              'need_price': 'True',\n          }\n          if limit is not None:\n              request['limit'] = limit\n          response = self.privateGetOrdersFilter(self.extend(request, query))\n          data = self.safe_value(response, 'data', [])\n          result = []\n          for i in range(0, len(data)):\n              orders = self.safe_value(data[i], 'orders', [])\n              status = self.parse_order_status(self.safe_value(data[i], 'state'))\n              parsedOrders = self.parse_orders(orders, market, since, limit, {'status': status})\n              result = self.array_concat(result, parsedOrders)\n          return result",
+    "diff_docstring": "  fetches information on multiple orders made by the user\n          :see: https://api.oceanex.pro/doc/v1/#order-status-with-filters-post\n          :param str symbol: unified market symbol of the market orders were made in\n          :param int [since]: the earliest time in ms to fetch orders for\n          :param int [limit]: the maximum number of order structures to retrieve\n          :param dict [params]: extra parameters specific to the oceanex api endpoint\n-         :returns Order[]: a list of `order structures <https://github.com/ccxt/ccxt/wiki/Manual#order-structure>`\n?                                                                ^^ ---     ^^^^ ^^^^^^ ^^^^^^^^^^\n\n+         :returns Order[]: a list of `order structures <https://docs.ccxt.com/#/?id=order-structure>`\n?                                                                ^^^^^^^^      ^ ^ ^^\n",
+    "whitespace_only_code": false,
+    "whitespace_only_docstring": false,
+    "file_path": "python/ccxt/oceanex.py",
+    "filename": "oceanex.py",
+    "project": "ccxt",
+    "owner": "ccxt"
+}
