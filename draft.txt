@@ -1,0 +1,24 @@
+Limitations of all existing work:
+1. LLM memory (Remove LLMMemory to remove hallucination / Over assumption / Inconsistency in large projects). 
+2. Hallucination (Instruction Tuning) 
+    => Solutions:
+        1. Instruction tuning / RLHF (Reinforcement Learning with Human Feedback)
+        2. Train on high-quality, domain-specific corpora
+        3. Contrastive training: Show the model both correct and incorrect outputs, teaching it to discriminate
+        4. RAG
+        5. Chain-of-thought prompting
+        6. Verifier models: Use a second model (or the same model with a verification prompt) to fact-check outputs
+3. Code documentation should be WHY instead of WHAT. Code-sum struggles to describe the purpose behind methods in the context of whole programs
+4. Most existing code documentation generation systems operate on narrow, isolated code snippets without considering the broader repository or program context.
+5. Factual inaccuracies, hallucinations, and semantic mismatches with actual code functionality.
+6. Existing research generally adopts static embedding methods for code representation, mapping a code token to an identical vector representation regardless of its context, which fails to capture the semantic nuances essential for accurate documentation generation.
+7. For long source code, outputs that are often redundant and provide only low-level explanations.
+8. Evaluation methods: BLEU, METEOR, ROUGUE : CONTEXT , Implement SIDE
+9. Limitations in retrieval-augmented code
+10. Token window size limitations of the LLMs
+
+
+Limitations for the paper:
+1. They did not use existing LLMs. They built their own encoder and decoder model.
+2. They only use BLEU, ROUGE as evaluation metrics that does not evaluate the context of the docstrings.
+3. They don't have evaluation metrics for XAI.
